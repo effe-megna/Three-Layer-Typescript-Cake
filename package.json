@@ -12,6 +12,7 @@
     "@morphic-ts/batteries": "^0.3.4",
     "@types/aws-lambda": "^8.10.40",
     "fp-ts": "^2.4.4",
+    "fp-ts-contrib": "^0.1.12",
     "io-ts": "^2.1.0"
   }
 }

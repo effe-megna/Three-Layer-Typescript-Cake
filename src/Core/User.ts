@@ -1,3 +1,4 @@
+import { QueryString } from "../Decoders/QueryString"
 
 export type User = {
   id: string
@@ -7,8 +8,5 @@ export type User = {
   group: "B2C" | "B2B" | "CS" | "ADMIN"
 }
 
-export const getVerifiedUser = (users: User[]): User[] => 
-  users.filter(user => user.emailVerified === true)
-
-export const getUnverifiedUser = (users: User[]): User[] =>
-  users.filter(user => user.emailVerified === false)
+export const filterByQuery = (users: User[], qs: QueryString): User[] =>
+  users.filter(user => user.email.startsWith(user.email) && user.group === qs.group)
