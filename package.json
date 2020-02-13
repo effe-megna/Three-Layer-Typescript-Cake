@@ -1,0 +1,17 @@
+{
+  "name": "three-layer-typescript-cake",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "@morphic-ts/batteries": "^0.3.4",
+    "@types/aws-lambda": "^8.10.40",
+    "fp-ts": "^2.4.4",
+    "io-ts": "^2.1.0"
+  }
+}
