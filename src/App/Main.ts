@@ -1,6 +1,6 @@
 import * as RTE from "fp-ts/lib/ReaderTaskEither"
 import * as E from "fp-ts/lib/Either"
-import { APIGatewayProxyHandler } from "aws-lambda"
+import { APIGatewayProxyHandler, APIGatewayProxyResult } from "aws-lambda"
 import { Env } from "./Env"
 import * as Decoders from "../Decoders"
 import { pipe } from "fp-ts/lib/pipeable"
@@ -26,6 +26,28 @@ import * as Effects from "../Effects"
  */
 
 export type Context<A> = RTE.ReaderTaskEither<Env, Error, A>
+
+type Program = (props: {
+  eventQueryString: Record<string, any> | null
+}) => RTE.ReaderTaskEither<Env, APIGatewayProxyResult, APIGatewayProxyResult>
+
+const program: Program = ({
+  eventQueryString
+}) => pipe(
+  RTE.fromEither(Decoders.parseQueryString(eventQueryString)),
+  RTE.chain(Effects.getUsers),
+  RTE.map(users => JSON.stringify(users)),
+  RTE.map(usersStringified => ({
+    statusCode: 200,
+    body: usersStringified
+  })),
+  RTE.mapLeft(err => ({
+    statusCode: 500,
+    body: JSON.stringify(err)
+  }))
+)
+
+export default program
 
 export const handler: APIGatewayProxyHandler = async (event) => {
   const program = pipe(

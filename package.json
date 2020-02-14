@@ -4,7 +4,8 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "npx jest",
+    "test:watch": "npx jest --watchAll"
   },
   "author": "",
   "license": "ISC",
@@ -14,5 +15,11 @@
     "fp-ts": "^2.4.4",
     "fp-ts-contrib": "^0.1.12",
     "io-ts": "^2.1.0"
+  },
+  "devDependencies": {
+    "@types/jest": "^25.1.2",
+    "jest": "^25.1.0",
+    "ts-jest": "^25.2.0",
+    "typescript": "^3.7.5"
   }
 }
