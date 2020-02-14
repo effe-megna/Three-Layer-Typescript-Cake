@@ -26,13 +26,23 @@ describe("program", () => {
     stageVariables: "DEV"
   }
 
-  test("run program with null queryString", async () => {
+  test("run program with null queryString should respond with statusCode 200", async () => {
     const result = await program({
       eventQueryString: null
     })(env)()
       .then(E.fold(identity, identity))
 
     expect(result.statusCode).toBe(200)
+  })
+
+  test("run program with invalid queryString should respond with statusCode 500 and QueryStringInvalid in metadata", async () => {
+    const result = await program({
+      eventQueryString: { group: "@" }
+    })(env)()
+      .then(E.fold(identity, identity))
+    
+    expect(result.statusCode).toBe(500)
+    expect(JSON.parse(result.body)._tag).toBe("QueryStringInvalid")
   })
 
 })

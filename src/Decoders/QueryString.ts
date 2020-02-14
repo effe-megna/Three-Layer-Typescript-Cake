@@ -7,19 +7,21 @@ import { AsOpaque } from "."
 
 export type QueryString = t.TypeOf<typeof QueryStringIO>
 
-const QueryStringIO_ = t.type({
-  group: t.union([
-    t.keyof({
-      B2C: null,
-      B2B: null,
-      CS: null,
-      ADMIN: null,
-    }), 
-    t.null, 
-    t.undefined
-  ]),
-  email: t.union([t.string, t.undefined, t.null])
-})
+const QueryStringIO_ = t.exact(
+  t.type({
+    group: t.union([
+      t.keyof({
+        B2C: null,
+        B2B: null,
+        CS: null,
+        ADMIN: null,
+      }), 
+      t.null, 
+      t.undefined
+    ]),
+    email: t.union([t.string, t.undefined, t.null])
+  })
+)
 
 interface QueryStringIO extends t.TypeOf<typeof QueryStringIO_> { }
 interface QueryStringIOO extends t.OutputOf<typeof QueryStringIO_> { }
@@ -30,6 +32,10 @@ export const parseQueryString = (qstr: Record<string, any> | null): E.Either<Que
   if (qstr === null || qstr === undefined) {
     return E.right(O.none)
   }
+
+  console.log(
+    QueryStringIO.decode(qstr)
+  )
 
   return pipe(
     qstr,

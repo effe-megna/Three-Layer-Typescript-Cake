@@ -28,7 +28,7 @@ import * as Effects from "../Effects"
 export type Context<A> = RTE.ReaderTaskEither<Env, Error, A>
 
 type Program = (props: {
-  eventQueryString: Record<string, any> | null
+  eventQueryString: Record<string, string> | null
 }) => RTE.ReaderTaskEither<Env, APIGatewayProxyResult, APIGatewayProxyResult>
 
 const program: Program = ({
@@ -48,28 +48,3 @@ const program: Program = ({
 )
 
 export default program
-
-export const handler: APIGatewayProxyHandler = async (event) => {
-  const program = pipe(
-    RTE.fromEither(Decoders.parseQueryString(event.queryStringParameters)),
-    RTE.chain(Effects.getUsers),
-    RTE.map(users => JSON.stringify(users)),
-    RTE.map(usersStringified => ({
-      statusCode: 200,
-      body: usersStringified
-    })),
-    RTE.mapLeft(err => ({
-      statusCode: 500,
-      body: JSON.stringify(err)
-    }))
-  )
-
-  const result = program({
-    daos: {
-      user: createUserDao("")
-    },
-    stageVariables: "DEV"
-  })()
-
-  return result.then(E.fold(identity, identity))
-}
