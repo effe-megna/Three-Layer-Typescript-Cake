@@ -8,5 +8,8 @@ export type User = {
   group: "B2C" | "B2B" | "CS" | "ADMIN"
 }
 
-export const filterByQuery = (users: User[], qs: QueryString): User[] =>
-  users.filter(user => user.email.startsWith(user.email) && user.group === qs.group)
+export const filterByQuery = (users: User[], qs: QueryString): User[] => {
+  return users.filter(user => 
+    (user.email.startsWith(user.email) || user.group === qs.group)  
+  )
+}

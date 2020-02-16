@@ -11,7 +11,6 @@ export type Error =
   | EmailDoesNotExist
   | QueryStringInvalid
 
-
 export type DbError = WithTag<Base, "DbError">
 
 export type UserNotFound = WithTag<Base, "UserNotFound">

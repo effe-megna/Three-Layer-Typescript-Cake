@@ -2,7 +2,7 @@ import program from "./App/Main"
 import { Env } from "./App/Env"
 import { User } from "./Core"
 import * as E from "fp-ts/lib/Either"
-import { identity } from "io-ts"
+import { Error } from "./App/Error"
 
 describe("program", () => {
   const user: User = {
@@ -26,23 +26,52 @@ describe("program", () => {
     stageVariables: "DEV"
   }
 
-  test("run program with null queryString should respond with statusCode 200", async () => {
+  test("run program without queryString, should respond with all users", async () => {
     const result = await program({
       eventQueryString: null
     })(env)()
-      .then(E.fold(identity, identity))
 
-    expect(result.statusCode).toBe(200)
+    expect(result).toMatchObject<E.Either<Error, User[]>>(
+      {
+        _tag: "Right",
+        right: [
+          user,
+          user
+        ]
+      }
+    )
   })
 
-  test("run program with invalid queryString should respond with statusCode 500 and QueryStringInvalid in metadata", async () => {
-    const result = await program({
-      eventQueryString: { group: "@" }
-    })(env)()
-      .then(E.fold(identity, identity))
+  test("run program with queryString, filtering by email, should given the exact user", async () => {
+    const martina: User = { 
+      name: "martina", 
+      group: "B2C", 
+      email: "martina.33@gmail.com", 
+      emailVerified: true, 
+      id: "44" 
+    }
     
-    expect(result.statusCode).toBe(500)
-    expect(JSON.parse(result.body)._tag).toBe("QueryStringInvalid")
+    const result = await program({
+      eventQueryString: { email: "martina" }
+    })({
+      ...env,
+      daos: {
+        ...env.daos,
+        user: {
+          ...env.daos.user,
+          getUsers: () => Promise.resolve<User[]>([martina])
+        }
+      }
+    })()
+
+    expect(result).toMatchObject<E.Either<Error, User[]>>(
+      {
+        _tag: "Right",
+        right: [
+          martina
+        ]
+      }
+    )
   })
 
 })

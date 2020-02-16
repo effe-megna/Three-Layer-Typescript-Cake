@@ -1,14 +1,11 @@
 import * as RTE from "fp-ts/lib/ReaderTaskEither"
-import * as E from "fp-ts/lib/Either"
-import { APIGatewayProxyHandler, APIGatewayProxyResult } from "aws-lambda"
 import { Env } from "./Env"
 import * as Decoders from "../Decoders"
 import { pipe } from "fp-ts/lib/pipeable"
-import { createUserDao } from "../Db"
 import { Error } from "./Error"
-import { identity } from "fp-ts/lib/function"
 
 import * as Effects from "../Effects"
+import { User } from "../Core"
 
 /**
  * Your real business logic might be fancier, but basically this is the most common case
@@ -29,22 +26,13 @@ export type Context<A> = RTE.ReaderTaskEither<Env, Error, A>
 
 type Program = (props: {
   eventQueryString: Record<string, string> | null
-}) => RTE.ReaderTaskEither<Env, APIGatewayProxyResult, APIGatewayProxyResult>
+}) => RTE.ReaderTaskEither<Env, Error, User[]>
 
 const program: Program = ({
   eventQueryString
 }) => pipe(
   RTE.fromEither(Decoders.parseQueryString(eventQueryString)),
-  RTE.chain(Effects.getUsers),
-  RTE.map(users => JSON.stringify(users)),
-  RTE.map(usersStringified => ({
-    statusCode: 200,
-    body: usersStringified
-  })),
-  RTE.mapLeft(err => ({
-    statusCode: 500,
-    body: JSON.stringify(err)
-  }))
+  RTE.chain(Effects.getUsers)
 )
 
 export default program

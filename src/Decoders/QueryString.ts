@@ -33,10 +33,6 @@ export const parseQueryString = (qstr: Record<string, any> | null): E.Either<Que
     return E.right(O.none)
   }
 
-  console.log(
-    QueryStringIO.decode(qstr)
-  )
-
   return pipe(
     qstr,
     QueryStringIO.decode,
