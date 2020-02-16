@@ -2,6 +2,8 @@ import program from "./App/Main"
 import { Env } from "./App/Env"
 import { User } from "./Core"
 import * as E from "fp-ts/lib/Either"
+import * as TE from "fp-ts/lib/TaskEither"
+import * as O from "fp-ts/lib/Option"
 import { Error } from "./App/Error"
 
 describe("program", () => {
@@ -16,8 +18,8 @@ describe("program", () => {
   const env: Env = {
     daos: {
       user: {
-        getUserByEmail: (email) => Promise.resolve(user),
-        getUsers: () => Promise.resolve([
+        getUserByEmail: (email) => TE.right(O.some(user)),
+        getUsers: () => TE.right([
           user,
           user
         ])
@@ -59,7 +61,7 @@ describe("program", () => {
         ...env.daos,
         user: {
           ...env.daos.user,
-          getUsers: () => Promise.resolve<User[]>([martina])
+          getUsers: () => TE.right([martina])
         }
       }
     })()
